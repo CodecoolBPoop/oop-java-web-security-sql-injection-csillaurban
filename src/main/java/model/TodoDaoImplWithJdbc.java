@@ -3,21 +3,38 @@ package model;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by ani on 2016.11.13..
  */
 public class TodoDaoImplWithJdbc implements TodoDao {
 
-    private static final String DATABASE = "jdbc:postgresql://localhost:5432/todolist";
-    private static final String DB_USER = "postgres";
-    private static final String DB_PASSWORD = "postgres";
+    private static final String DATABASE = System.getenv("database");
+    private static final String DB_USER = System.getenv("dbUser");
+    private static final String DB_PASSWORD = System.getenv("dbPassword");
 
     @Override
-    public void add(Todo todo) {
-        String query = "INSERT INTO todos (title, id, status) " +
+    public void add(Todo todo){
+        try {
+            String query = "INSERT INTO todos(title, id, status) VALUES(?, ?, ?)";
+            Connection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, todo.title);
+            statement.setString(2, todo.id);
+            statement.setString(3, Status.ACTIVE.toString());
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException se) {
+            Logger lgr = Logger.getLogger(TodoDaoImplWithJdbc.class.getName());
+            lgr.log(Level.SEVERE, se.getMessage(), se);
+        }
+
+
+        /*String query = "INSERT INTO todos (title, id, status) " +
                 "VALUES ('" + todo.title + "', '" + todo.id + "', '" + todo.status + "');";
-        executeQuery(query);
+        executeQuery(query);*/
     }
 
     @Override
@@ -47,7 +64,7 @@ public class TodoDaoImplWithJdbc implements TodoDao {
 
     @Override
     public void update(String id, String title) {
-        String query = "UPDATE todos SET title = '" + title + "' WHERE id = '" + id + "';";
+        String query = "UPDATE todos SET title = '" + title + "'WHERE id = '" + id + "';";
         executeQuery(query);
     }
 

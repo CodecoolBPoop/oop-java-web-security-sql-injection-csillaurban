@@ -12,8 +12,7 @@ class View {
         this.$toggleAll = document.querySelector('.toggle-all');
         this.$newTodo = document.querySelector('.new-todo');
         View.delegate(this.$todoList, 'li label', 'dblclick', ({target}) => {
-            this.editItem(target);
-        });
+            this.editItem(target);})
 
         this.$filterAll = document.getElementById("filter_");
         this.$filterActive = document.getElementById("filter_active");
